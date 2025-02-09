@@ -12,6 +12,7 @@ async function run() {
     const s3Bucket = core.getInput('s3-bucket');
     const filesGlob = core.getInput('files');
     const targetPath = core.getInput('target-path');
+    const stripPathPrefix = core.getInput('strip-path-prefix');
     const s3Region = core.getInput('s3-region');
     const s3ApiVersion = core.getInput('s3-api-version');
 
@@ -19,6 +20,9 @@ async function run() {
     core.info(`Uploading to S3 Bucket: ${s3Bucket}`);
     core.info(`Using files glob pattern: ${filesGlob}`);
     core.info(`Target path in S3: ${targetPath}`);
+    if (stripPathPrefix) {
+      core.info(`Stripping path prefix: ${stripPathPrefix}`);
+    }
     if (s3Region) {
       core.info(`Using S3 Region: ${s3Region}`);
     }
@@ -51,7 +55,14 @@ async function run() {
 
     for (const filePath of filesToUpload) {
       const relativePath = path.relative(process.env.GITHUB_WORKSPACE, filePath); // Get path relative to workspace
-      const s3Key = path.posix.join(targetPath, relativePath).replace(/^\/+/, ''); // Ensure forward slashes and remove leading slash
+      let processedPath = relativePath;
+      
+      // Strip the prefix if it exists
+      if (stripPathPrefix && processedPath.startsWith(stripPathPrefix)) {
+        processedPath = processedPath.slice(stripPathPrefix.length);
+      }
+      
+      const s3Key = path.posix.join(targetPath, processedPath).replace(/^\/+/, ''); // Ensure forward slashes and remove leading slash
       core.info(`Uploading ${filePath} to s3://${s3Bucket}/${s3Key}`);
 
       try {

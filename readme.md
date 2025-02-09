@@ -10,6 +10,7 @@ This GitHub Action uploads files to an S3 compatible storage service.
 * `s3-bucket`: **Required.** S3 bucket name.
 * `files`: **Required.** Glob pattern for files to upload (e.g., `dist/**/*`).
 * `target-path`: **Required.** Target path in the S3 bucket (e.g., `uploads/`). Defaults to `/` (root of the bucket).
+* `strip-path-prefix`: *Optional.* Path prefix to strip from uploaded files (e.g., `dist/` will strip this prefix from all uploaded files). Defaults to '' (no stripping).
 * `s3-region`: *Optional.* S3 region (e.g., `us-east-1`). Required for standard AWS S3, often optional for S3-compatible services.
 * `s3-api-version`: *Optional.* S3 API version (e.g., `2006-03-01`). Optional, defaults to the latest.
 

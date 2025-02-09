@@ -20,6 +20,10 @@ inputs:
     description: 'Target path in the S3 bucket (e.g., `uploads/`).'
     required: true
     default: '/'
+  strip-path-prefix:
+    description: 'Path prefix to strip from uploaded files (e.g., `dist/` will strip this prefix from all uploaded files).'
+    required: false
+    default: ''
   s3-region:
     description: 'S3 region (e.g., `us-east-1`).  Required for standard AWS S3, often optional for S3-compatible services.'
     required: false
