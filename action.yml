@@ -31,9 +31,6 @@ inputs:
   s3-region:
     description: 'S3 region (e.g., `us-east-1`).  Required for standard AWS S3, often optional for S3-compatible services.'
     required: false
-  s3-api-version:
-    description: 'S3 API version (e.g., `2006-03-01`).  Optional, defaults to the latest.'
-    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'
