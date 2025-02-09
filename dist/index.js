@@ -75154,9 +75154,9 @@ async function run() {
         s3Key = s3Key.slice(stripPathPrefix.length);
       }
 
-      s3Key = path.posix.join(targetPath, s3Key)
+      s3Key = path.posix.join(targetPath, s3Key).replace(/^\/+/, '')
       
-      core.info(`Uploading ${filePath} to s3://${s3Bucket}${s3Key}`);
+      core.info(`Uploading ${filePath} to s3://${s3Bucket}/${s3Key}`);
 
       try {
         await minioClient.fPutObject(s3Bucket, s3Key, filePath); // Using fPutObject from minio
