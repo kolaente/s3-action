@@ -75129,7 +75129,11 @@ async function run() {
       const excludeGlobber = await glob.create(excludeGlob);
       const excludedFiles = new Set(await excludeGlobber.glob());
       filesToUpload = filesToUpload.filter(file => !excludedFiles.has(file));
-      core.info(`Excluded ${excludedFiles.join(', ')} files from upload.`);
+      if (excludedFiles.size > 0) {
+        core.info(`Excluded files ${Array.from(excludedFiles).join(', ')} from upload.`);
+      } else {
+        core.info('No files matched the exclude pattern.');
+      }
     }
 
     if (filesToUpload.length === 0) {
