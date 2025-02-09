@@ -4,8 +4,8 @@ inputs:
   s3-access-key-id: # Renamed from aws-access-key-id
     description: 'S3 Access Key ID for authentication.' # Updated description
     required: true
-  s3-secret-access-key: # Renamed from aws-secret-access-key
-    description: 'S3 Secret Access Key for authentication.' # Updated description
+  s3-secret-access-key:
+    description: 'S3 Secret Access Key for authentication.'
     required: true
   s3-endpoint:
     description: 'S3 compatible endpoint URL (e.g., `https://s3.example.com`).'
@@ -19,13 +19,13 @@ inputs:
   target-path:
     description: 'Target path in the S3 bucket (e.g., `uploads/`).'
     required: true
-    default: '/' # Default to the root of the bucket
-  s3-region: # Renamed from aws-region
+    default: '/'
+  s3-region:
     description: 'S3 region (e.g., `us-east-1`).  Required for standard AWS S3, often optional for S3-compatible services.' # Updated description
-    required: false # Make it optional
-  s3-api-version: # Renamed from aws-api-version
+    required: false
+  s3-api-version:
     description: 'S3 API version (e.g., `2006-03-01`).  Optional, defaults to the latest.' # Updated description
     required: false
 runs:
-  using: 'node22' # Specify Node.js version
-  main: 'dist/index.js' # Entry point after building
+  using: 'node20'
+  main: 'dist/index.js'
