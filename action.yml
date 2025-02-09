@@ -1,0 +1,31 @@
+name: 'S3 Compatible Upload'
+description: 'Uploads files to an S3 compatible storage service using glob patterns.'
+inputs:
+  s3-access-key-id: # Renamed from aws-access-key-id
+    description: 'S3 Access Key ID for authentication.' # Updated description
+    required: true
+  s3-secret-access-key: # Renamed from aws-secret-access-key
+    description: 'S3 Secret Access Key for authentication.' # Updated description
+    required: true
+  s3-endpoint:
+    description: 'S3 compatible endpoint URL (e.g., `https://s3.example.com`).'
+    required: true
+  s3-bucket:
+    description: 'S3 bucket name.'
+    required: true
+  files:
+    description: 'Glob pattern for files to upload (e.g., `dist/**/*`).'
+    required: true
+  target-path:
+    description: 'Target path in the S3 bucket (e.g., `uploads/`).'
+    required: true
+    default: '/' # Default to the root of the bucket
+  s3-region: # Renamed from aws-region
+    description: 'S3 region (e.g., `us-east-1`).  Required for standard AWS S3, often optional for S3-compatible services.' # Updated description
+    required: false # Make it optional
+  s3-api-version: # Renamed from aws-api-version
+    description: 'S3 API version (e.g., `2006-03-01`).  Optional, defaults to the latest.' # Updated description
+    required: false
+runs:
+  using: 'node22' # Specify Node.js version
+  main: 'dist/index.js' # Entry point after building
