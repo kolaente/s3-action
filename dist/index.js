@@ -75147,14 +75147,15 @@ async function run() {
       const relativePath = path.relative(process.env.GITHUB_WORKSPACE, filePath); // Get path relative to workspace
       let processedPath = relativePath;
       
-      // Strip the prefix if it exists
-      if (stripPathPrefix && processedPath.startsWith(stripPathPrefix)) {
-        processedPath = processedPath.slice(stripPathPrefix.length);
-      }
-      
-      const s3Key = path.posix.join(targetPath, processedPath)
+      let s3Key = path.posix.join(targetPath, relativePath)
         .replace(/^\/+/, '') // Remove leading slash
         .replace(/\\/g, '/'); // Convert any Windows backslashes to forward slashes
+
+      // Strip the prefix if it exists
+      if (stripPathPrefix && s3Key.startsWith(stripPathPrefix)) {
+        s3Key = s3Key.slice(stripPathPrefix.length);
+      }
+      
       core.info(`Uploading ${filePath} to s3://${s3Bucket}/${s3Key}`);
 
       try {
