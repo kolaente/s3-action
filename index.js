@@ -65,8 +65,6 @@ async function run() {
 
     for (const filePath of filesToUpload) {
       const relativePath = path.relative(process.env.GITHUB_WORKSPACE, filePath); // Get path relative to workspace
-      let processedPath = relativePath;
-      
       let s3Key = path.posix.join(targetPath, relativePath)
         .replace(/^\/+/, '') // Remove leading slash
         .replace(/\\/g, '/'); // Convert any Windows backslashes to forward slashes
