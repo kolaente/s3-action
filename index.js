@@ -55,7 +55,7 @@ async function run() {
       const excludeGlobber = await glob.create(excludeGlob);
       const excludedFiles = new Set(await excludeGlobber.glob());
       filesToUpload = filesToUpload.filter(file => !excludedFiles.has(file));
-      core.info(`Excluded ${excludedFiles.size} files from upload.`);
+      core.info(`Excluded ${excludedFiles.join(', ')} files from upload.`);
     }
 
     if (filesToUpload.length === 0) {
