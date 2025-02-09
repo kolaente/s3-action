@@ -75095,7 +75095,6 @@ async function run() {
     const targetPath = core.getInput('target-path');
     const stripPathPrefix = core.getInput('strip-path-prefix');
     const s3Region = core.getInput('s3-region');
-    const s3ApiVersion = core.getInput('s3-api-version');
 
     core.info(`Using S3 Endpoint: ${s3Endpoint}`);
     core.info(`Uploading to S3 Bucket: ${s3Bucket}`);
@@ -75110,9 +75109,6 @@ async function run() {
     if (s3Region) {
       core.info(`Using S3 Region: ${s3Region}`);
     }
-    if (s3ApiVersion) {
-      core.info(`Using S3 API Version: ${s3ApiVersion}`);
-    }
 
     const useSSL = s3Endpoint.startsWith('https://'); // Infer useSSL from endpoint
 
@@ -75123,8 +75119,6 @@ async function run() {
       accessKey: s3AccessKeyId,
       secretKey: s3SecretAccessKey,
       region: s3Region || undefined, // Region is optional and can be undefined if not provided
-      // apiVersion is not directly supported by minio client options.
-      // Minio client generally handles API version compatibility.
     });
 
     const globber = await glob.create(filesGlob);
@@ -75154,7 +75148,9 @@ async function run() {
         processedPath = processedPath.slice(stripPathPrefix.length);
       }
       
-      const s3Key = path.posix.join(targetPath, processedPath).replace(/^\/+/, ''); // Ensure forward slashes and remove leading slash
+      const s3Key = path.posix.join(targetPath, processedPath)
+        .replace(/^\/+/, '') // Remove leading slash
+        .replace(/\\/g, '/'); // Convert any Windows backslashes to forward slashes
       core.info(`Uploading ${filePath} to s3://${s3Bucket}/${s3Key}`);
 
       try {
