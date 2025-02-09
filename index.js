@@ -68,7 +68,9 @@ async function run() {
         processedPath = processedPath.slice(stripPathPrefix.length);
       }
       
-      const s3Key = path.posix.join(targetPath, processedPath).replace(/^\/+/, ''); // Ensure forward slashes and remove leading slash
+      const s3Key = path.posix.join(targetPath, processedPath)
+        .replace(/^\/+/, '') // Remove leading slash
+        .replace(/\\/g, '/'); // Convert any Windows backslashes to forward slashes
       core.info(`Uploading ${filePath} to s3://${s3Bucket}/${s3Key}`);
 
       try {
