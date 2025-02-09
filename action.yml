@@ -16,6 +16,10 @@ inputs:
   files:
     description: 'Glob pattern for files to upload (e.g., `dist/**/*`).'
     required: true
+  exclude:
+    description: 'Glob pattern for files to exclude from upload (e.g., `**/*.tmp`).'
+    required: false
+    default: ''
   target-path:
     description: 'Target path in the S3 bucket (e.g., `uploads/`).'
     required: true

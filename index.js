@@ -11,6 +11,7 @@ async function run() {
     const s3Endpoint = core.getInput('s3-endpoint');
     const s3Bucket = core.getInput('s3-bucket');
     const filesGlob = core.getInput('files');
+    const excludeGlob = core.getInput('exclude');
     const targetPath = core.getInput('target-path');
     const stripPathPrefix = core.getInput('strip-path-prefix');
     const s3Region = core.getInput('s3-region');
@@ -19,6 +20,9 @@ async function run() {
     core.info(`Using S3 Endpoint: ${s3Endpoint}`);
     core.info(`Uploading to S3 Bucket: ${s3Bucket}`);
     core.info(`Using files glob pattern: ${filesGlob}`);
+    if (excludeGlob) {
+      core.info(`Excluding files matching: ${excludeGlob}`);
+    }
     core.info(`Target path in S3: ${targetPath}`);
     if (stripPathPrefix) {
       core.info(`Stripping path prefix: ${stripPathPrefix}`);
@@ -44,10 +48,18 @@ async function run() {
     });
 
     const globber = await glob.create(filesGlob);
-    const filesToUpload = await globber.glob();
+    let filesToUpload = await globber.glob();
+
+    // Handle exclusions if specified
+    if (excludeGlob) {
+      const excludeGlobber = await glob.create(excludeGlob);
+      const excludedFiles = new Set(await excludeGlobber.glob());
+      filesToUpload = filesToUpload.filter(file => !excludedFiles.has(file));
+      core.info(`Excluded ${excludedFiles.size} files from upload.`);
+    }
 
     if (filesToUpload.length === 0) {
-      core.warning('No files found matching the glob pattern. Nothing to upload.');
+      core.warning('No files found matching the glob pattern or all files were excluded. Nothing to upload.');
       return;
     }
 
