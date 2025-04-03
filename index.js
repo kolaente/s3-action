@@ -76,14 +76,14 @@ async function run() {
 
       s3Key = path.posix.join(targetPath, s3Key).replace(/^\/+/, '')
       
-      core.info(`Uploading ${filePath} to s3://${s3Bucket}/${s3Key}`);
+      core.info(`Uploading ${relativePath} to s3://${s3Bucket}/${s3Key}`);
 
       try {
         await minioClient.fPutObject(s3Bucket, s3Key, filePath); // Using fPutObject from minio
-        core.info(`Uploaded ${filePath} successfully.`);
+        core.info(`Uploaded ${relativePath} successfully.`);
       } catch (uploadError) {
-        core.error(`Error uploading ${filePath}: ${uploadError.message}`); // More specific error logging
-        core.setFailed(`File upload failed for ${filePath}. See error details in logs.`);
+        core.error(`Error uploading ${relativePath}: ${JSON.stringify(uploadError)}`); // More specific error logging
+        core.setFailed(`File upload failed for ${relativePath}.`);
         return; // Stop processing further files if one fails significantly
       }
     }
