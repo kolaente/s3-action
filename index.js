@@ -76,8 +76,11 @@ async function run() {
 
       s3Key = path.posix.join(targetPath, s3Key).replace(/^\/+/, '')
       
-      // Log the relative path instead of the full path
-      const displayPath = relativePath.replace(/\\/g, '/'); // Normalize path for display
+      let displayPath = relativePath.replace(/\\/g, '/');
+      if (stripPathPrefix && displayPath.startsWith(stripPathPrefix)) {
+        displayPath = displayPath.slice(stripPathPrefix.length);
+      }
+      
       core.info(`Uploading ${displayPath} to s3://${s3Bucket}/${s3Key}`);
 
       try {
