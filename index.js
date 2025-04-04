@@ -82,9 +82,9 @@ async function run() {
         await minioClient.fPutObject(s3Bucket, s3Key, filePath); // Using fPutObject from minio
         core.info(`Uploaded ${relativePath} successfully.`);
       } catch (uploadError) {
-        core.error(`Error uploading ${relativePath}: ${JSON.stringify(uploadError)}`); // More specific error logging
+        core.error(`Error uploading ${relativePath}: ${JSON.stringify(uploadError)}`);
         core.setFailed(`File upload failed for ${relativePath}.`);
-        return; // Stop processing further files if one fails significantly
+        return;
       }
     }
 
