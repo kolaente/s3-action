@@ -15,6 +15,7 @@ async function run() {
     const targetPath = core.getInput('target-path');
     const stripPathPrefix = core.getInput('strip-path-prefix');
     const s3Region = core.getInput('s3-region');
+    const retryCount = parseInt(core.getInput('retry-count'), 10) || 3;
 
     core.info(`Using S3 Endpoint: ${s3Endpoint}`);
     core.info(`Uploading to S3 Bucket: ${s3Bucket}`);
@@ -29,6 +30,7 @@ async function run() {
     if (s3Region) {
       core.info(`Using S3 Region: ${s3Region}`);
     }
+    core.info(`Will retry failed uploads up to ${retryCount} times`);
 
     const useSSL = s3Endpoint.startsWith('https://'); // Infer useSSL from endpoint
 
@@ -63,6 +65,23 @@ async function run() {
 
     core.info(`Found ${filesToUpload.length} files to upload.`);
 
+    // Helper function to upload a file with retries
+    async function uploadFileWithRetry(filePath, s3Key, displayPath, attemptsLeft) {
+      try {
+        await minioClient.fPutObject(s3Bucket, s3Key, filePath);
+        core.info(`Uploaded ${displayPath} successfully.`);
+        return true;
+      } catch (uploadError) {
+        if (attemptsLeft > 0) {
+          core.warning(`Error uploading ${displayPath}: ${uploadError.message}. Retrying... (${attemptsLeft} attempts left)`);
+          return uploadFileWithRetry(filePath, s3Key, displayPath, attemptsLeft - 1);
+        } else {
+          core.error(`Error uploading ${displayPath} after all retry attempts: ${JSON.stringify(uploadError)}`);
+          throw uploadError;
+        }
+      }
+    }
+
     for (const filePath of filesToUpload) {
       const relativePath = path.relative(process.env.GITHUB_WORKSPACE, filePath); // Get path relative to workspace
       let s3Key = relativePath
@@ -84,13 +103,9 @@ async function run() {
       core.info(`Uploading ${displayPath} to s3://${s3Bucket}/${s3Key}`);
 
       try {
-        await minioClient.fPutObject(s3Bucket, s3Key, filePath); // Using fPutObject from minio
-        // Log the relative path in success message
-        core.info(`Uploaded ${displayPath} successfully.`);
+        await uploadFileWithRetry(filePath, s3Key, displayPath, retryCount);
       } catch (uploadError) {
-        // Log the relative path in error message
-        core.error(`Error uploading ${displayPath}: ${JSON.stringify(uploadError)}`);
-        core.setFailed(`File upload failed for ${displayPath}.`);
+        core.setFailed(`File upload failed for ${displayPath} after ${retryCount + 1} attempts.`);
         return;
       }
     }

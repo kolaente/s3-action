@@ -31,6 +31,10 @@ inputs:
   s3-region:
     description: 'S3 region (e.g., `us-east-1`).  Required for standard AWS S3, often optional for S3-compatible services.'
     required: false
+  retry-count:
+    description: 'Number of times to retry failed uploads before giving up.'
+    required: false
+    default: '3'
 runs:
   using: 'node20'
   main: 'dist/index.js'
