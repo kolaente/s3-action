@@ -75124,7 +75124,7 @@ async function run() {
     });
 
     const globber = await glob.create(filesGlob);
-    let filesToUpload = await globber.glob();
+    let filesToUpload = (await globber.glob()).filter(f => fs.statSync(f).isFile());
 
     // Handle exclusions if specified
     if (excludeGlob) {
